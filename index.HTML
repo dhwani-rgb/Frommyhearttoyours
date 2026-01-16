@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>For Micky ❤️</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff9aa2, #ff5f9e);
+    color: white;
+    text-align: center;
+    overflow: hidden;
+  }
+  .container {
+    max-width: 500px;
+    margin: auto;
+    padding: 30px 20px;
+    position: relative;
+    z-index: 2;
+  }
+  h1 { margin-top: 40px; }
+  button, a.btn {
+    display: block;
+    margin: 15px auto;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    background: white;
+    color: #ff4081;
+    text-decoration: none;
+    width: 80%;
+    max-width: 300px;
+  }
+  /* NO button initial position */
+  #noBtn {
+    position: absolute;
+    top: 75%;
+    left: 70%;
+    transform: translate(0, 0);
+  }
+  /* Floating hearts */
+  .heart-float {
+    position: absolute;
+    font-size: 26px;
+    animation: float 6s infinite ease-in-out;
+  }
+  @keyframes float {
+    0% { transform: translateY(0) }
+    50% { transform: translateY(-40px) }
+    100% { transform: translateY(0) }
+  }
+  /* Heart rain */
+  .heart-rain {
+    position: fixed;
+    top: -10px;
+    font-size: 22px;
+    animation: fall linear forwards;
+    z-index: 1;
+  }
+  @keyframes fall {
+    to {
+      transform: translateY(110vh);
+      opacity: 0;
+    }
+  }
+  /* Hug animation */
+  .hug-box {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    font-size: 50px;
+    animation: hugMove 1.2s ease-in-out forwards;
+  }
+  @keyframes hugMove {
+    100% { transform: translateX(-20px); }
+  }
+  /* Secret */
+  #secret {
+    display: none;
+    margin-top: 20px;
+    font-size: 18px;
+    color: white;
+  }
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: red;
+    animation: confettiFall 1.2s linear forwards;
+    z-index: 3;
+  }
+  @keyframes confettiFall {
+    to {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+  /* Hug message */
+  #hugMessage {
+    margin: 15px 0;
+    font-size: 18px;
+    color: white;
+    display: none; /* hidden initially */
+  }
+  /* Quiz styles */
+  #quizPage {
+    display: none;
+    max-width: 500px;
+    margin: auto;
+    padding: 30px 20px;
+    color: white;
+    text-align: center;
+  }
+  #quizPage .question {
+    margin: 20px 0;
+    font-size: 24px;
+  }
+  #quizPage .options button {
+    display: block;
+    background: white;
+    color: #ff4081;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 20px;
+    margin: 10px auto;
+    cursor: pointer;
+    width: 80%;
+    max-width: 300px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  #quizPage .options button:hover {
+    background-color: #ffadc1;
+  }
+  #feedback {
+    margin-top: 15px;
+    font-size: 18px;
+    height: 24px;
+    color: #ffd1dc;
+  }
+  #result {
+    margin-top: 40px;
+    font-size: 26px;
+    font-weight: bold;
+  }
+  /* Countdown */
+  #countdown {
+    margin-top: 10px;
+    font-size: 18px;
+    color: white;
+  }
+</style>
+</head>
+<body onclick="confettiBurst(event)">
+
+<!-- Valentine Page -->
+<div id="valentinePage" class="container">
+  <div class="heart-float" style="top:10%;left:20%">❤️</div>
+  <div class="heart-float" style="top:30%;left:70%">❤️</div>
+  <div class="heart-float" style="top:70%;left:40%">❤️</div>
+
+  <h1>Will you be my Valentine, Micky? 💘</h1>
+  <button onclick="yes()" aria-label="Say Yes">YES 💖</button>
+  <button id="noBtn" onmouseover="moveNo()" aria-label="Say No">NO 😜</button>
+</div>
+
+<!-- Post YES Page (hug + zoom + schedule) -->
+<div id="postYesPage" class="container" style="display:none;">
+  <h1>I knew you’d say YES, Micky!</h1>
+  <div id="hugArea"></div>
+  <p id="hugMessage">Sending you the tightest virtual hug 🫂</p>
+
+  <p id="countdown"></p>
+
+  <a class="btn" href="https://us04web.zoom.us/j/79527809903?pwd=GbItxZGIpbao32Rd3bhflQmRaVZwbl.1" target="_blank" aria-label="Join Zoom Call">
+    📞 Join our Zoom Call
+  </a>
+
+  <button onclick="rehug()" aria-label="Need another hug">🫂 Need another hug</button>
+  <button onclick="revealSecret()" aria-label="Reveal secret message">💌 One more thing I want to tell you…</button>
+
+  <div id="secret" style="display:none;">
+    ✨ Distance doesn’t matter when hearts are this close.<br>
+    I can’t wait to see you smile on our call ❤️  
+    <br><br>
+    Love, Dhwani 💖
+  </div>
+
+  <button id="scheduleBtn" class="btn" onclick="goToQuiz()" aria-label="Schedule a date">Schedule a Date</button>
+</div>
+
+<!-- Quiz Page -->
+<div id="quizPage" class="container">
+  <h1>Compatibility Quiz 💞</h1>
+  <div id="quizContainer">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div id="feedback"></div>
+  </div>
+  <div id="result"></div>
+</div>
+
+<script>
+  // NO button escape
+  function moveNo(){
+    const b = document.getElementById("noBtn");
+    b.style.left = (50 + Math.random() * 40) + "%";
+    b.style.top = (65 + Math.random() * 25) + "%";
+  }
+
+  // Hug stuff
+  let hugTimeout;
+  function rehug(){
+    const hugArea = document.getElementById("hugArea");
+    hugArea.innerHTML = "🫂";
+
+    const hugMessage = document.getElementById("hugMessage");
+    hugMessage.style.display = "block";
+
+    if(hugTimeout) clearTimeout(hugTimeout);
+
+    hugTimeout = setTimeout(() => {
+      hugArea.innerHTML = "";
+      hugMessage.style.display = "none";
+    }, 5000);
+  }
+
+  function revealSecret(){
+    const secret = document.getElementById("secret");
+    secret.style.display = "block";
+    setTimeout(() => {
+      secret.style.display = "none";
+    }, 15000);
+  }
+
+  // Countdown
+  let countdownInterval;
+  function startCountdown(){
+    clearInterval(countdownInterval);
+    const callTime = new Date(2026, 1, 14, 21, 30); // Feb 14, 2026 21:30
+    countdownInterval = setInterval(() => {
+      const d = callTime - new Date();
+      const countdownEl = document.getElementById("countdown");
+      if(d < 0){
+        clearInterval(countdownInterval);
+        if(countdownEl) countdownEl.innerText = "⏳ The Zoom call is live or has passed!";
+        return;
+      }
+      const days = Math.floor(d / (1000*60*60*24));
+      const hrs = Math.floor((d % (1000*60*60*24)) / (1000*60*60));
+      const mins = Math.floor((d % (1000*60*60)) / (1000*60));
+      if(countdownEl) countdownEl.innerText = `⏳ ${days}d ${hrs}h ${mins}m until our Zoom call`;
+    }, 1000);
+  }
+
+  // Heart rain
+  let heartRainInterval;
+  function startHeartRain(){
+    if(heartRainInterval) clearInterval(heartRainInterval);
+    heartRainInterval = setInterval(() => {
+      const h = document.createElement("div");
+      h.className = "heart-rain";
+      h.innerText = "❤️";
+      h.style.left = Math.random()*100 + "vw";
+      h.style.animationDuration = 3 + Math.random()*2 + "s";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 5000);
+    }, 300);
+  }
+
+  // Confetti (prevent confetti on buttons)
+  function confettiBurst(e){
+    if(e.target.tagName === 'BUTTON' || e.target.tagName === 'A'){
+      return; // Don't trigger confetti when clicking buttons or links
+    }
+    for(let i=0; i<20; i++){
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = e.clientX + "px";
+      c.style.top = e.clientY + "px";
+      c.style.background = `hsl(${Math.random()*360},100%,60%)`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 1200);
+    }
+  }
+
+  // YES button handler
+  function yes(){
+    // Hide Valentine page, show post-YES page
+    document.getElementById('valentinePage').style.display = 'none';
+    document.getElementById('postYesPage').style.display = 'block';
+
+    // Start countdown and heart rain on postYesPage
+    startCountdown();
+    startHeartRain();
+
+    // Reset hug area and message if needed
+    rehug();
+  }
+
+  // Schedule button leads to quiz
+  function goToQuiz(){
+    document.getElementById('postYesPage').style.display = 'none';
+    document.getElementById('quizPage').style.display = 'block';
+
+    resetQuiz();
+    loadQuestion();
+  }
+
+  // Quiz data and logic
+  const quizData = [
+    { question: "1. What's my birthdate?", options: ["08th October", "15th November", "22nd January", "5th May"], correctIndex: 0 },
+    { question: "2. What's my favorite season?", options: ["Winter", "All", "Summer", "Monsoon"], correctIndex: 1 },
+    { question: "3. What's my favorite color?", options: ["Red", "Black", "Blue", "Green"], correctIndex: 1 },
+    { question: "4. How much do I love you?", options: ["A little", "Somewhat", "A lot", "Infinite"], correctIndex: 3 }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById('question');
+  const optionsEl = document.getElementById('options');
+  const feedbackEl = document.getElementById('feedback');
+  const resultEl = document.getElementById('result');
+
+  function loadQuestion() {
+    feedbackEl.textContent = '';
+    resultEl.innerHTML = '';
+    if (currentIndex >= quizData.length) {
+      showResult();
+      return;
+    }
+
+    const currentQ = quizData[currentIndex];
+    questionEl.style.display = 'block';
+    optionsEl.style.display = 'block';
+    feedbackEl.style.display = 'block';
+
+    questionEl.textContent = currentQ.question;
+    optionsEl.innerHTML = '';
+
+    currentQ.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.setAttribute('aria-label', `Answer option ${opt}`);
+      btn.onclick = () => selectOption(i);
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedIndex) {
+    const correctIndex = quizData[currentIndex].correctIndex;
+    if (selectedIndex === correctIndex) {
+      score++;
+      currentIndex++;
+      loadQuestion();
+    } else {
+      feedbackEl.textContent = "Oops! Try again ❤️";
+    }
+  }
+
+  function showResult() {
+    questionEl.style.display = 'none';
+    optionsEl.style.display = 'none';
+    feedbackEl.style.display = 'none';
+
+    resultEl.innerHTML = `
+      <h2>🎉 Congratulations! You selected the perfect girl! 🎉</h2>
+      <p style="font-size:24px; font-weight:bold; margin: 20px 0;">
+        You're amazing, Micky!<br>
+        Hurry, she's waiting for your call!!!<br><br>
+      </p>
+      <button id="faceTimeBtn" style="
+        background:#00cc66; 
+        color:white; 
+        font-size:26px; 
+        padding:18px; 
+        border-radius:30px; 
+        width:80%; 
+        max-width:320px; 
+        cursor:pointer;
+      ">
+        📱 FaceTime Now!
+      </button>
+      <button id="backToPostYesBtn" style="
+        margin-top:20px;
+        background:#ff4081; 
+        color:white; 
+        font-size:20px; 
+        padding:14px; 
+        border-radius:30px; 
+        width:80%; 
+        max-width:320px; 
+        cursor:pointer;
+      ">
+        ← Back
+      </button>
+    `;
+
+    document.getElementById('faceTimeBtn').onclick = () => {
+      window.location.href = 'facetime://'; // Opens FaceTime on supported devices
+    };
+
+    document.getElementById('backToPostYesBtn').onclick = () => {
+      document.getElementById('quizPage').style.display = 'none';
+      document.getElementById('postYesPage').style.display = 'block';
+      resetQuiz();
+    };
+  }
+
+  function resetQuiz() {
+    currentIndex = 0;
+    score = 0;
+    questionEl.style.display = 'block';
+    optionsEl.style.display = 'block';
+    feedbackEl.style.display = 'block';
+    resultEl.innerHTML = '';
+    feedbackEl.textContent = '';
+  }
+</script>
+</body>
+</html>
